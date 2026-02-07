@@ -1,17 +1,11 @@
-export type Polygon = {
-    color: string;
-    highlighted: boolean;
-    id: string;
-    points: { x: number, y: number }[];
-}
-
-export function createSelectionController(polygons: Polygon[], setPolygons: (p: Polygon[]) => void) {
+import { Cell } from "../components/mosaicGen";
+export function createSelectionController(polygons: Cell[], setPolygons: (p: Cell[]) => void) {
     let selectedId: string | null = null;
 
     return function handleSelection(clickedId: string | null) {
         if (selectedId === null) {
             selectedId = clickedId;
-            setPolygons(polygons.map((poly: Polygon) =>
+            setPolygons(polygons.map((poly: Cell) =>
                 poly.id === clickedId
                     ? { ...poly, highlighted: true }
                     : poly
@@ -21,12 +15,12 @@ export function createSelectionController(polygons: Polygon[], setPolygons: (p: 
 
         if (selectedId === clickedId) {
             selectedId = null;
-            setPolygons(polygons.map((poly: Polygon) => ({ ...poly, highlighted: false })));
+            setPolygons(polygons.map((poly: Cell) => ({ ...poly, highlighted: false })));
             return;
         }
 
         // swap colors
-        setPolygons(polygons.map((poly: Polygon) => {
+        setPolygons(polygons.map((poly: Cell) => {
             return { ...poly, highlighted: false };
         }));
 

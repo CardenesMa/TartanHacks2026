@@ -4,15 +4,15 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useImageStore } from '@/store/useImageStore';
 import { createSelectionController } from '../state/poyrender';
-import { Polygon } from '../state/poyrender';
-import DrawingBoard from '../components/svgguy';
+import { Cell } from '../components/mosaicGen';
+import DrawingBoard from '../components/DrawingBoard';
 
 
 export default function PlayPage() {
     const svgRef = useRef<SVGSVGElement>(null);
     const { imageData } = useImageStore();
     const router = useRouter();
-    const [polygons, setPolygons] = useState<Polygon[]>([]);
+    const [polygons, setPolygons] = useState<Cell[]>([]);
 
     const controllerRef = useRef(
         createSelectionController(polygons, setPolygons)

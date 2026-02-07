@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useImageStore } from '@/store/useImageStore';
+import DrawingBoard from './components/DrawingBoard';
+import Mosaic from './components/Mosaic';
 
 export default function Home() {
   const router = useRouter();
@@ -74,7 +76,8 @@ export default function Home() {
         <div className="w-full gap-12 p-6 flex flex-col items-center">
           {/*  blank "image"  */}
           {currentImage ?
-            <canvas ref={canvasRef} className="w-64 h-64 bg-white rounded-2xl border border-bigblue" />
+            // <canvas ref={canvasRef} className="w-64 h-64 bg-white rounded-2xl border border-bigblue" />
+            <Mosaic imageData={currentImage} />
             :
             <label className="w-64 h-64 bg-white rounded-2xl border border-bigblue p-6 flex flex-col items-center cursor-pointer hover:bg-red transition-colors">
               <input
