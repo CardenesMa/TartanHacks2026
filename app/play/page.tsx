@@ -1,70 +1,140 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { useImageStore } from '@/store/useImageStore';
-import { createSelectionController } from '../state/poyrender';
-import { Cell } from '../components/mosaicGen';
-import DrawingBoard from '../components/DrawingBoard';
+import { useRouter } from 'next/navigation';
+import GameBoard from '../components/GameBoard';
+import LoadingScreen from '../components/LoadingScreen';
+import WinScreen from '../components/WinScreen';
+import { generateVoronoiMosaic, Image as Img, _Cell } from '../components/mosaicGen';
+import { cropAndResize, getScrambledVersion, checkIfSolved } from '../state/gameUtils';
 
+type GameState = 'loading' | 'intro' | 'playing' | 'won';
 
 export default function PlayPage() {
-    const svgRef = useRef<SVGSVGElement>(null);
-    const { imageData } = useImageStore();
-    const router = useRouter();
-    const [polygons, setPolygons] = useState<Cell[]>([]);
+  const router = useRouter();
+  const { imageData } = useImageStore();
+  const [gameState, setGameState] = useState<GameState>('loading');
+  const [originalCells, setOriginalCells] = useState<_Cell[]>([]);
+  const [scrambledCells, setScrambledCells] = useState<_Cell[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [showHint, setShowHint] = useState(false);
 
-    const controllerRef = useRef(
-        createSelectionController(polygons, setPolygons)
-    )
+  useEffect(() => {
+    if (!imageData) {
+      router.push('/');
+      return;
+    }
 
+    // Process image and generate mosaics
+    const processImage = async () => {
+      try {
+        // Crop and resize to 200x200
+        const processedImage = await cropAndResize(imageData, 200, 200);
+        
+        // Generate original mosaic
+        const cells = generateVoronoiMosaic(processedImage, 150);
+        setOriginalCells(cells);
+        
+        // Generate scrambled version (efficient - each tile swapped at least once)
+        const scrambled = getScrambledVersion(cells);
+        setScrambledCells(scrambled);
+        
+        // Wait a bit for loading animation, then start intro
+        setTimeout(() => setGameState('intro'), 1000);
+      } catch (error) {
+        console.error('Error processing image:', error);
+        router.push('/');
+      }
+    };
 
-    useEffect(() => {
-        // Redirect if no image data
-        if (!imageData) {
-            router.push('/');
-            return;
+    processImage();
+  }, [imageData, router]);
+
+  const handleCellClick = (index: number) => {
+    setShowHint(false); // Hide hint when user makes a move
+    
+    if (selectedIndex === null) {
+      // First selection
+      setSelectedIndex(index);
+    } else if (selectedIndex === index) {
+      // Deselect if clicking same cell
+      setSelectedIndex(null);
+    } else {
+      // Swap the two cells
+      const newCells = [...scrambledCells];
+      const temp = newCells[selectedIndex].color;
+      newCells[selectedIndex].color = newCells[index].color;
+      newCells[index].color = temp;
+      
+      setScrambledCells(newCells);
+      setSelectedIndex(null);
+      
+      // Check if solved
+      if (checkIfSolved(newCells, originalCells)) {
+        setTimeout(() => setGameState('won'), 500);
+      }
+    }
+  };
+
+  const handleHint = () => {
+    setShowHint(!showHint);
+  };
+
+  const handleDownload = () => {
+    // Create canvas and render mosaic
+    const canvas = document.createElement('canvas');
+    canvas.width = 600;
+    canvas.height = 600;
+    const ctx = canvas.getContext('2d');
+    
+    if (ctx) {
+      // Draw each cell
+      originalCells.forEach(cell => {
+        ctx.fillStyle = cell.color;
+        ctx.beginPath();
+        cell.vertices.forEach((v, i) => {
+          if (i === 0) ctx.moveTo(v.x * 3, v.y * 3); // Scale up 200->600
+          else ctx.lineTo(v.x * 3, v.y * 3);
+        });
+        ctx.closePath();
+        ctx.fill();
+      });
+      
+      // Download
+      canvas.toBlob(blob => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'mosaic-puzzle.png';
+          a.click();
+          URL.revokeObjectURL(url);
         }
+      });
+    }
+  };
 
-        const svg = svgRef.current;
-        if (!svg) return;
+  if (gameState === 'loading') {
+    return <LoadingScreen />;
+  }
 
-    }, [imageData, router]);
+  if (gameState === 'won') {
+    return <WinScreen onDownload={handleDownload} onPlayAgain={() => router.push('/')} />;
+  }
 
-    return (
-        <main className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
-            <div className="w-full max-w-2xl mx-auto flex flex-col items-center space-y-8">
-                <div className="text-center">
-                    <h1 className="text-4xl font-bold mb-2 text-blue-700">Play Mode</h1>
-                    <p className="text-base text-slate-600">Your image is ready to play! 🎨</p>
-                </div>
-
-                <div className="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-6 flex flex-col items-center">
-                    <svg width="800" height="600">
-
-
-                        <DrawingBoard
-                            polygons={polygons}
-                            onPolygonClick={id => controllerRef.current(id)}
-                        />
-                    </svg>
-
-                </div>
-
-                <div className="flex justify-center gap-4 w-full">
-                    <button
-                        onClick={() => router.push('/')}
-                        className="px-6 py-2 bg-slate-100 border border-slate-200 rounded-lg text-blue-700 font-semibold shadow hover:bg-slate-200 transition"
-                    >
-                        ← Back to Home
-                    </button>
-                    <button
-                        className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition"
-                    >
-                        Start Playing
-                    </button>
-                </div>
-            </div>
-        </main>
-    );
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <GameBoard
+        originalCells={originalCells}
+        scrambledCells={scrambledCells}
+        selectedIndex={selectedIndex}
+        showHint={showHint}
+        gameState={gameState}
+        onCellClick={handleCellClick}
+        onHint={handleHint}
+        onIntroComplete={() => setGameState('playing')}
+      />
+    </div>
+  );
 }
