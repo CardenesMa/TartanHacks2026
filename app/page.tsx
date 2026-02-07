@@ -40,10 +40,10 @@ export default function Home() {
     <main className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="w-full max-w-2xl m-4 mx-auto flex flex-col items-center space-y-8">
         <div className="text-center">
-          <h1 className="text-[10vw] font-bold mb-2 bg-gradient-to-r from-bigblue to-bigblue/80 bg-clip-text text-transparent">
+          <h1 className="text-[10vw] font-bold mb-2 bg-gradient-to-r from-bigblue to-bigblue/40 bg-clip-text text-transparent">
             Welcome
           </h1>
-          <p className="text-base text-bigblue">Upload an image to start</p>
+          <p className="text-base text-bigblue">Create your mosaic</p>
         </div>
 
         <div className="w-full gap-12 p-6 flex flex-col items-center">
@@ -82,7 +82,7 @@ export default function Home() {
             </label>
           )}
 
-          <div>
+          <div className="flex flex-col items-center">
             <button
               className="w-64 h-16 bg-bigblue text-white text-xl rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
               onClick={() => handleConfirm('easy')}
