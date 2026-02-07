@@ -40,27 +40,27 @@ export default function Home() {
     <main className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="w-full max-w-2xl m-4 mx-auto flex flex-col items-center space-y-8">
         <div className="text-center">
-          <h1 className="text-[10vw] font-bold mb-2 bg-gradient-to-r from-bigblue to-bigblue/40 bg-clip-text text-transparent">
+          <h1 className="text-[10vw] font-bold mb-2 text-primary italic">
             Welcome
           </h1>
-          <p className="text-base text-bigblue">Create your mosaic</p>
+          <p className="text-base text-primary">Create your mosaic</p>
         </div>
 
         <div className="w-full gap-12 p-6 flex flex-col items-center">
           {currentImage ? (
             <div className="flex flex-col items-center gap-4">
-              <div className="w-64 h-64 rounded-2xl overflow-hidden border border-bigblue">
+              <div className="w-64 h-64 rounded-2xl overflow-hidden border-1 border-primary">
                 <img src={currentImage} alt="Preview" className="w-full h-full object-cover" />
               </div>
               <button
                 onClick={handleReset}
-                className="px-6 py-2 text-bigblue hover:bg-lightblue rounded-lg transition-all duration-200 active:scale-95"
+                className="px-6 py-2 text-primary hover:bg-secondary rounded-lg transition-all duration-200 active:scale-95"
               >
                 Change Image
               </button>
             </div>
           ) : (
-            <label className="w-64 h-64 bg-white rounded-2xl border border-bigblue p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-lightblue transition-all duration-200 active:scale-95">
+            <label className="w-64 h-64 bg-white/40 rounded-2xl border-4 border-primary p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-secondary transition-all duration-200 active:scale-95">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -72,37 +72,37 @@ export default function Home() {
                 <path
                   d="M15.24,6.63a1.09,1.09,0,0,0-2,0l-2.8,5.53v0L9,8.9a1,1,0,0,0-1.8,0L3,18H21Z"
                   fill="none"
-                  stroke="#2783C5"
+                  stroke="var(--color-primary)"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
                 />
               </svg>
-              <p className="mt-4 text-bigblue text-sm">Click to upload</p>
+              <p className="mt-4 text-primary text-sm">Tap to upload</p>
             </label>
           )}
 
           <div className="flex flex-col items-center">
             <button
-              className="w-64 h-16 bg-bigblue text-white text-xl rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+              className="w-64 h-16 bg-primary text-white text-xl rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
               onClick={() => handleConfirm('easy')}
               disabled={!currentImage}
             >
               Easy
             </button>
             <button
-              className="w-64 h-16 bg-bigblue text-white text-xl rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 mt-4"
+              className="w-64 h-16 bg-primary text-white text-xl rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 mt-4"
               onClick={() => handleConfirm('medium')}
               disabled={!currentImage}
             >
               Medium
             </button>
             <button
-              className="w-64 h-16 bg-bigblue text-white text-xl rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 mt-4"
+              className="w-64 h-16 bg-primary text-white text-xl rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 mt-4"
               onClick={() => handleConfirm('hard')}
               disabled={!currentImage}
             >
-              Cookoobananapants
+              Extreme
             </button>
           </div>
         </div>

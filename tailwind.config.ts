@@ -13,8 +13,9 @@ const config = {
       },
       colors: {
         black: '#0d0e12',
-        bigblue: '#2783C5',
-        lightblue: '#DCF1FF',
+        primary: '#5E3023',
+        secondary: '#F3E9DC',
+        midtone: '#C08552',
         background: '#EEF7FF',
         white: '#fff',
         cyan: {

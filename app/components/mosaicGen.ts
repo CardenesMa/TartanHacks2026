@@ -1,9 +1,15 @@
 // mosaicGen.ts
 // Translation from mosaicGen.js to TypeScript
+const ROUND_AMOUNT = 100;
 
 // Helper functions for mathematical operations and types
 function random(max: number): number {
     return Math.random() * max;
+}
+
+function round(num: number, pre: number): number {
+    if (!pre) pre = 1;
+    return Math.ceil(num * pre) / pre;
 }
 
 function randomRange(min: number, max: number): number {
@@ -320,12 +326,12 @@ function calculateCellColor(voronoiMap: number[][], seedIdx: number, image: Imag
         }
     }
     if (count === 0) return "rgb(128, 128, 128)";
-    
+
     // CRITICAL FIX: Round to integers for proper Canvas rendering
-    const r = Math.round(sumR / count);
-    const g = Math.round(sumG / count);
-    const b = Math.round(sumB / count);
-    
+    const r = round(sumR / count, ROUND_AMOUNT);
+    const g = round(sumG / count, ROUND_AMOUNT);
+    const b = round(sumB / count, ROUND_AMOUNT);
+
     return `rgb(${r}, ${g}, ${b})`;
 }
 

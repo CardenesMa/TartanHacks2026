@@ -17,7 +17,7 @@ export default function WinScreen({ onDownload, onPlayAgain }: WinScreenProps) {
     const colors = ['#2783C5', '#DCF1FF', '#FFD700', '#87CEEB'];
     const confettiCount = 50;
     const container = document.getElementById('confetti-container');
-    
+
     if (!container) return;
 
     for (let i = 0; i < confettiCount; i++) {
@@ -36,25 +36,25 @@ export default function WinScreen({ onDownload, onPlayAgain }: WinScreenProps) {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center relative overflow-hidden">
       <div id="confetti-container" className="absolute inset-0 pointer-events-none"></div>
-      
+
       <div className="text-center z-10 space-y-6 p-8">
         <div className="win-badge">
           <div className="text-6xl mb-4">🎉</div>
-          <h1 className="text-5xl font-bold text-bigblue mb-2">You Won!</h1>
-          <p className="text-lg text-bigblue/80">Puzzle completed successfully</p>
+          <h1 className="text-5xl font-bold text-primary mb-2">You Won!</h1>
+          <p className="text-lg text-primary/80">Puzzle completed successfully</p>
         </div>
 
         <div className="flex flex-col gap-4 mt-8">
           <button
             onClick={onDownload}
-            className="px-8 py-4 bg-bigblue text-white text-lg rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95"
+            className="px-8 py-4 bg-primary text-white text-lg rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95"
           >
             Download Your Mosaic
           </button>
-          
+
           <button
             onClick={onPlayAgain}
-            className="px-8 py-4 bg-white border-2 border-bigblue text-bigblue text-lg rounded-lg font-semibold hover:bg-lightblue transition-all duration-200 active:scale-95"
+            className="px-8 py-4 bg-white border-2 border-primary text-primary text-lg rounded-lg font-semibold hover:bg-secondary transition-all duration-200 active:scale-95"
           >
             Play Again
           </button>

@@ -2,6 +2,7 @@
 
 import { _Cell } from './mosaicGen';
 import { useState, useEffect } from 'react';
+import style from './gameboard.module.css';
 
 type GameBoardProps = {
   originalCells: _Cell[];
@@ -34,11 +35,11 @@ export default function GameBoard({
       // Step 1: Show original mosaic with pop animation (bottom half)
       setTimeout(() => setShowOriginal(true), 100);
 
-      // Step 2: Glide upwards
-      setTimeout(() => {
-        const elem = document.getElementById('original-mosaic');
-        elem?.classList.add('glide-up');
-      }, 800);
+      // // Step 2: Glide upwards
+      // setTimeout(() => {
+      //   const elem = document.getElementById(style["original-mosaic"]);
+      //   // elem?.classList.add(style['glide-up']);
+      // }, 800);
 
       // Step 3: Show scrambled mosaic fading in tile by tile
       setTimeout(() => {
@@ -76,8 +77,8 @@ export default function GameBoard({
       {/* Original Mosaic - Top Half */}
       {showOriginal && (
         <div
-          id="original-mosaic"
-          className="mosaic-container pop-in mb-4"
+          id={style["original-mosaic"]}
+          className={`${style['mosaic-container']} ${style['glide-up']} ${style['pop-in']} mb-4`}
           style={{
             width: '40vw',
             maxWidth: '400px',
@@ -92,7 +93,7 @@ export default function GameBoard({
             height="100%"
             viewBox="0 0 200 200"
             preserveAspectRatio="xMidYMid meet"
-            className="mosaic-svg"
+            className={style["mosaic-svg"]}
           >
             {originalCells.map((cell, i) => (
               <polygon
@@ -103,44 +104,47 @@ export default function GameBoard({
               />
             ))}
           </svg>
-          <div className="text-center mt-2 text-bigblue font-semibold">Original</div>
+          <div className="text-center mt-2 text-primary font-semibold">Original</div>
         </div>
       )}
 
       {/* Scrambled Mosaic - Bottom Half */}
       {showScrambled && (
-        <div className="mosaic-container fade-in">
+        <div className={`${style['mosaic-container']} ${style['fade-in']}`}>
           <svg
             width="100%"
             height="100%"
             viewBox="0 0 200 200"
             preserveAspectRatio="xMidYMid meet"
-            className="mosaic-svg"
+            className={style["mosaic-svg"]}
           >
             {scrambledCells.map((cell, i) => (
-              <polygon
-                key={`scram-${i}`}
-                points={cell.vertices.map(v => `${v.x},${v.y}`).join(' ')}
-                fill={cell.color}
-                stroke={
-                  selectedIndex === i
-                    ? '#2783C5'
-                    : (showHint && differingCells[i])
-                      ? '#FFD700'
-                      : 'none'
-                }
-                strokeWidth={selectedIndex === i ? '2' : showHint && differingCells[i] ? '1.5' : '0'}
-                onClick={() => gameState === 'playing' && onCellClick(i)}
-                className={`cell-polygon ${cellsVisible[i] ? 'visible' : ''} ${gameState === 'playing' ? 'interactive' : ''} ${selectedIndex === i ? 'selected' : ''}`}
-                style={{
-                  filter: showHint && differingCells[i] ? 'drop-shadow(0 0 4px #FFD700)' : 'none',
-                  opacity: cellsVisible[i] ? 1 : 0,
-                  transition: `opacity 0.3s ease ${i * 15}ms`
-                }}
-              />
+              <g key={`group-${i}`}
+                className={`${style['cell-polygon']} ${cellsVisible[i] ? 'visible' : ''} ${gameState === 'playing' ? style['interactive'] : ''} ${selectedIndex === i ? style['selected'] : ''}`}
+              >
+                <polygon
+                  key={`scram-${i}`}
+                  points={cell.vertices.map(v => `${v.x},${v.y}`).join(' ')}
+                  fill={cell.color}
+                  stroke={
+                    selectedIndex === i
+                      ? 'var(--color-secondary)'
+                      : (showHint && differingCells[i])
+                        ? '#FFD700'
+                        : 'none'
+                  }
+                  strokeWidth={selectedIndex === i ? '2' : showHint && differingCells[i] ? '1.5' : '0'}
+                  onClick={() => gameState === 'playing' && onCellClick(i)}
+                  style={{
+                    filter: showHint && differingCells[i] ? 'drop-shadow(0 0 4px #FFD700)' : 'none',
+                    opacity: cellsVisible[i] ? 1 : 0,
+                    transition: `opacity 0.3s ease ${i * 15}ms`
+                  }}
+                />
+              </g>
             ))}
           </svg>
-          <div className="text-center mt-2 text-bigblue font-semibold">Your Puzzle</div>
+          <div className="text-center mt-2 text-primary font-semibold">Your Puzzle</div>
         </div>
       )}
 
@@ -148,7 +152,7 @@ export default function GameBoard({
       {gameState === 'playing' && (
         <button
           onClick={onHint}
-          className="m-4 p-4 bg-white border-2 border-bigblue text-bigblue rounded-lg font-semibold hover:bg-lightblue transition-all duration-200 active:scale-95 shadow-md"
+          className="m-4 p-4 bg-white border-2 border-primary text-primary rounded-lg font-semibold hover:bg-secondary transition-all duration-200 active:scale-95 shadow-md"
         >
           {showHint ? 'Hide' : 'Show'} Differences
         </button>
@@ -156,79 +160,6 @@ export default function GameBoard({
 
       <style jsx>{`
 
-        .pop-in {
-          animation: pop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        @keyframes pop {
-          0% {
-            transform: scale(0) translateY(50%);
-            opacity: 0;
-          }
-          70% {
-            transform: scale(1.1) translateY(50%);
-          }
-          100% {
-            transform: scale(1) translateY(50%);
-            opacity: 1;
-          }
-        }
-
-        .glide-up {
-          animation: glideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @keyframes glideUp {
-          from {
-            bottom: 50%;
-            transform: translateY(50%);
-          }
-          to {
-            bottom: auto;
-            position: relative;
-            transform: translateY(0);
-          }
-        }
-
-        .fade-in {
-          animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        .cell-polygon.interactive {
-          cursor: pointer;
-          transition: transform 0.15s ease;
-        }
-
-        .cell-polygon.interactive:hover {
-          transform: scale(1.05);
-          transform-origin: center;
-        }
-
-        .cell-polygon.interactive:active {
-          transform: scale(0.95);
-        }
-
-        .cell-polygon.selected {
-          animation: pulse 0.6s ease infinite;
-        }
-
-        @keyframes pulse {
-          0%, 100% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.08);
-          }
-        }
       `}</style>
     </div>
   );

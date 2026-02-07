@@ -10,6 +10,8 @@ import WinScreen from '../components/WinScreen';
 import { generateVoronoiMosaic, Image as Img, _Cell } from '../components/mosaicGen';
 import { cropAndResize, getScrambledVersion, checkIfSolved } from '../state/gameUtils';
 
+
+const LOADING_TIME = 2000; // Minimum loading screen time in ms
 type GameState = 'loading' | 'intro' | 'playing' | 'won';
 type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -42,7 +44,7 @@ export default function PlayPage() {
                 // Generate original mosaic based on difficulty
                 let size = 150;
                 if (difficulty === 'easy') {
-                    size = 2;
+                    size = 50;
                 } else if (difficulty === 'hard') {
                     size = 200;
                 }
@@ -54,7 +56,7 @@ export default function PlayPage() {
                 setScrambledCells(scrambled);
 
                 // Wait a bit for loading animation, then start intro
-                setTimeout(() => setGameState('intro'), 1000);
+                setTimeout(() => setGameState('intro'), LOADING_TIME);
             } catch (error) {
                 console.error('Error processing image:', error);
                 router.push('/');
@@ -62,7 +64,7 @@ export default function PlayPage() {
         };
 
         processImage();
-    }, [imageData, router]);
+    }, [imageData, router, difficulty]);
 
     const handleCellClick = (index: number) => {
         setShowHint(false); // Hide hint when user makes a move

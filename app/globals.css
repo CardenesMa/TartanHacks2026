@@ -1,13 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bigblue: #2783C5;
-  --color-lightblue: #DCF1FF;
-  --color-background: #EEF7FF;
+
+  --color-primary: #5E3023;
+  --color-secondary: #F3E9DC;
+  --color-midtone: #C08552;
+  --color-background: #F3E9DC;
 }
 
 * {
   box-sizing: border-box;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: normal;
+}
+
+.italic {
+  font-style: italic;
 }
 
 /* Smooth transitions for all interactive elements */
@@ -25,11 +33,11 @@ button:active {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-lightblue);
+  background: var(--color-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-bigblue);
+  background: var(--color-primary);
   border-radius: 4px;
 }
 
