@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme {
+  --color-bigblue: #2783C5;
+  --color-lightblue: #DCF1FF;
+  --color-background: #EEF7FF;
+}
 
 * {
   margin: 0;
