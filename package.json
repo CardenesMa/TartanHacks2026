@@ -23,9 +23,9 @@
   "dependencies": {
     "@types/peerjs": "^0.0.30",
     "next": "^16.1.6",
-    "peerjs": "^1.5.5",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
