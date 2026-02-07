@@ -18,15 +18,15 @@ button:active{transform:scale(.95)}
 /* Home */
 #home .title{font-size:10vw;font-weight:700;color:var(--primary);font-style:italic;margin-bottom:.5rem}
 #home .subtitle{font-size:1rem;color:var(--primary);margin-bottom:2rem}
-.upload-label{width:16rem;height:16rem;background:rgba(255,255,255,.4);border-radius:1rem;border:4px solid var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.upload-label{width:16rem;height:16rem;background:var(--primary);border-radius:1rem;border:4px solid var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
 .upload-label:hover{background:var(--secondary)}
-.upload-label p{margin-top:1rem;color:var(--primary);font-size:.875rem}
+.upload-label p{margin-top:1rem;color:var(--secondary);font-size:.875rem}
 .preview-wrap{display:flex;flex-direction:column;align-items:center;gap:1rem}
 .preview-img{width:16rem;height:16rem;border-radius:1rem;object-fit:cover;border:1px solid var(--primary)}
 .change-btn{padding:.5rem 1.5rem;color:var(--primary);background:none;border-radius:.5rem}
 .change-btn:hover{background:var(--secondary)}
 .diff-btns{display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:2rem}
-.diff-btn{width:16rem;height:4rem;background:var(--primary);color:#fff;font-size:1.25rem;border-radius:.5rem;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.diff-btn{width:16rem;height:4rem;background:var(--primary);opacity:50%;color:#fff;font-size:1.25rem;border-radius:.5rem;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.15)}
 .diff-btn:disabled{opacity:.5;cursor:not-allowed}
 .diff-btn:hover:not(:disabled){box-shadow:0 6px 20px rgba(0,0,0,.2)}
 
@@ -82,13 +82,27 @@ button:active{transform:scale(.95)}
     <h1 class="title">Welcome</h1>
     <p class="subtitle">Create your mosaic</p>
   </div>
+  <div id="loading" hidden>
+    <!-- make loading svg dots -->
+     <div class="min-h-screen bg-background flex flex-col items-center justify-center">
+      <div class="text-center">
+        <!-- <h2 class="text-3xl font-bold text-primary mb-8">Creating your puzzle...</h2> -->
+
+        <div class="flex gap-3 justify-center">
+          <div class="w-4 h-4 bg-primary rounded-full animate-bounce" style=" animation-delay: '0ms' "></div>
+          <div class="w-4 h-4 bg-primary rounded-full animate-bounce" style=" animation-delay: '150ms' "></div>
+          <div class="w-4 h-4 bg-primary rounded-full animate-bounce" style=" animation-delay: '300ms' "></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div id="upload-area">
     <label class="upload-label">
       <input type="file" accept="image/*" id="file-input" style="display:none">
       <svg viewBox="0 0 24 24" style="width:6rem;height:6rem">
-        <path d="M15.24,6.63a1.09,1.09,0,0,0-2,0l-2.8,5.53v0L9,8.9a1,1,0,0,0-1.8,0L3,18H21Z" fill="none" stroke="var(--primary)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <path d="M15.24,6.63a1.09,1.09,0,0,0-2,0l-2.8,5.53v0L9,8.9a1,1,0,0,0-1.8,0L3,18H21Z" fill="none" stroke="var(--secondary)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
       </svg>
-      <p>Tap to upload</p>
+      <p><b>Tap to upload</b></p>
     </label>
   </div>
   <div id="preview-area" class="hidden">
@@ -104,23 +118,15 @@ button:active{transform:scale(.95)}
   </div>
 </div>
 
-<!-- LOADING PAGE -->
-<div id="loading" class="page hidden">
-  <div style="text-align:center">
-    <h2>Creating your puzzle...</h2>
-    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-  </div>
-</div>
-
 <!-- GAME PAGE -->
 <div id="game" class="page hidden">
-  <div class="mosaic-wrap" id="original-wrap">
+  <div class="mosaic-wrap glide-up" id="original-wrap">
     <svg class="mosaic-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" id="original-svg"></svg>
     <div class="mosaic-label">Original</div>
   </div>
   <div class="mosaic-wrap" id="scrambled-wrap" style="display:none">
     <svg class="mosaic-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" id="scrambled-svg"></svg>
-    <div class="mosaic-label">Your Puzzle</div>
+    <!-- <div class="mosaic-label">Your Puzzle</div> -->
   </div>
   <button class="hint-btn hidden" id="hint-btn">Show Differences</button>
 </div>

@@ -45,7 +45,7 @@
     }
 
     // ---- Page helpers ----
-    var pages = ['home', 'loading', 'game', 'win'];
+    var pages = ['home', 'game', 'win'];
     function showPage(id) {
         pages.forEach(function (p) {
             document.getElementById(p).classList.toggle('hidden', p !== id);
@@ -250,12 +250,13 @@
         state.showHint = false;
         state.gamePhase = 'intro';
 
-        showPage('loading');
+        // show loading screen
+        document.getElementById('loading').hidden = false;
 
         cropAndResize(state.imageData, 200, 200, function (processed) {
             if (!processed) { showPage('home'); return; }
 
-            var size = difficulty === 'easy' ? 50 : difficulty === 'hard' ? 200 : 150;
+            var size = difficulty === 'easy' ? 20 : difficulty === 'hard' ? 200 : 50;
             state.originalCells = MosaicGen.generateVoronoiMosaic(processed, size);
             state.scrambledCells = getScrambledVersion(state.originalCells);
 
