@@ -33,13 +33,13 @@ export default function GameBoard({
     if (gameState === 'intro') {
       // Step 1: Show original mosaic with pop animation (bottom half)
       setTimeout(() => setShowOriginal(true), 100);
-      
+
       // Step 2: Glide upwards
       setTimeout(() => {
         const elem = document.getElementById('original-mosaic');
         elem?.classList.add('glide-up');
       }, 800);
-      
+
       // Step 3: Show scrambled mosaic fading in tile by tile
       setTimeout(() => {
         setShowScrambled(true);
@@ -55,7 +55,7 @@ export default function GameBoard({
           }, delay);
         });
       }, 1500);
-      
+
       // Step 4: Complete intro
       setTimeout(() => {
         onIntroComplete();
@@ -64,7 +64,7 @@ export default function GameBoard({
   }, [gameState, scrambledCells.length, onIntroComplete]);
 
   const getDifferingCells = () => {
-    return scrambledCells.map((cell, i) => 
+    return scrambledCells.map((cell, i) =>
       cell.color !== originalCells[i].color
     );
   };
@@ -75,18 +75,21 @@ export default function GameBoard({
     <div className="flex-1 flex flex-col items-center justify-start p-4 relative overflow-hidden">
       {/* Original Mosaic - Top Half */}
       {showOriginal && (
-        <div 
+        <div
           id="original-mosaic"
           className="mosaic-container pop-in mb-4"
           style={{
+            width: '40vw',
+            maxWidth: '400px',
+            height: 'auto',
             position: gameState === 'intro' ? 'absolute' : 'relative',
             bottom: gameState === 'intro' ? '50%' : 'auto',
             transform: gameState === 'intro' ? 'translateY(50%)' : 'none'
           }}
         >
-          <svg 
-            width="100%" 
-            height="100%" 
+          <svg
+            width="100%"
+            height="100%"
             viewBox="0 0 200 200"
             preserveAspectRatio="xMidYMid meet"
             className="mosaic-svg"
@@ -107,9 +110,9 @@ export default function GameBoard({
       {/* Scrambled Mosaic - Bottom Half */}
       {showScrambled && (
         <div className="mosaic-container fade-in">
-          <svg 
-            width="100%" 
-            height="100%" 
+          <svg
+            width="100%"
+            height="100%"
             viewBox="0 0 200 200"
             preserveAspectRatio="xMidYMid meet"
             className="mosaic-svg"
@@ -120,10 +123,10 @@ export default function GameBoard({
                 points={cell.vertices.map(v => `${v.x},${v.y}`).join(' ')}
                 fill={cell.color}
                 stroke={
-                  selectedIndex === i 
-                    ? '#2783C5' 
-                    : (showHint && differingCells[i]) 
-                      ? '#FFD700' 
+                  selectedIndex === i
+                    ? '#2783C5'
+                    : (showHint && differingCells[i])
+                      ? '#FFD700'
                       : 'none'
                 }
                 strokeWidth={selectedIndex === i ? '2' : showHint && differingCells[i] ? '1.5' : '0'}

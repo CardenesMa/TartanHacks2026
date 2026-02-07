@@ -12,129 +12,129 @@ import { cropAndResize, getScrambledVersion, checkIfSolved } from '../state/game
 type GameState = 'loading' | 'intro' | 'playing' | 'won';
 
 export default function PlayPage() {
-  const router = useRouter();
-  const { imageData } = useImageStore();
-  const [gameState, setGameState] = useState<GameState>('loading');
-  const [originalCells, setOriginalCells] = useState<_Cell[]>([]);
-  const [scrambledCells, setScrambledCells] = useState<_Cell[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [showHint, setShowHint] = useState(false);
+    const router = useRouter();
+    const { imageData } = useImageStore();
+    const [gameState, setGameState] = useState<GameState>('loading');
+    const [originalCells, setOriginalCells] = useState<_Cell[]>([]);
+    const [scrambledCells, setScrambledCells] = useState<_Cell[]>([]);
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    const [showHint, setShowHint] = useState(false);
 
-  useEffect(() => {
-    if (!imageData) {
-      router.push('/');
-      return;
-    }
+    useEffect(() => {
+        if (!imageData) {
+            router.push('/');
+            return;
+        }
 
-    // Process image and generate mosaics
-    const processImage = async () => {
-      try {
-        // Crop and resize to 200x200
-        const processedImage = await cropAndResize(imageData, 200, 200);
-        
-        // Generate original mosaic
-        const cells = generateVoronoiMosaic(processedImage, 150);
-        setOriginalCells(cells);
-        
-        // Generate scrambled version (efficient - each tile swapped at least once)
-        const scrambled = getScrambledVersion(cells);
-        setScrambledCells(scrambled);
-        
-        // Wait a bit for loading animation, then start intro
-        setTimeout(() => setGameState('intro'), 1000);
-      } catch (error) {
-        console.error('Error processing image:', error);
-        router.push('/');
-      }
+        // Process image and generate mosaics
+        const processImage = async () => {
+            try {
+                // Crop and resize to 200x200
+                const processedImage = await cropAndResize(imageData, 200, 200);
+
+                // Generate original mosaic
+                const cells = generateVoronoiMosaic(processedImage, 150);
+                setOriginalCells(cells);
+
+                // Generate scrambled version (efficient - each tile swapped at least once)
+                const scrambled = getScrambledVersion(cells);
+                setScrambledCells(scrambled);
+
+                // Wait a bit for loading animation, then start intro
+                setTimeout(() => setGameState('intro'), 1000);
+            } catch (error) {
+                console.error('Error processing image:', error);
+                router.push('/');
+            }
+        };
+
+        processImage();
+    }, [imageData, router]);
+
+    const handleCellClick = (index: number) => {
+        setShowHint(false); // Hide hint when user makes a move
+
+        if (selectedIndex === null) {
+            // First selection
+            setSelectedIndex(index);
+        } else if (selectedIndex === index) {
+            // Deselect if clicking same cell
+            setSelectedIndex(null);
+        } else {
+            // Swap the two cells
+            const newCells = [...scrambledCells];
+            const temp = newCells[selectedIndex].color;
+            newCells[selectedIndex].color = newCells[index].color;
+            newCells[index].color = temp;
+
+            setScrambledCells(newCells);
+            setSelectedIndex(null);
+
+            // Check if solved
+            if (checkIfSolved(newCells, originalCells)) {
+                setTimeout(() => setGameState('won'), 500);
+            }
+        }
     };
 
-    processImage();
-  }, [imageData, router]);
+    const handleHint = () => {
+        setShowHint(!showHint);
+    };
 
-  const handleCellClick = (index: number) => {
-    setShowHint(false); // Hide hint when user makes a move
-    
-    if (selectedIndex === null) {
-      // First selection
-      setSelectedIndex(index);
-    } else if (selectedIndex === index) {
-      // Deselect if clicking same cell
-      setSelectedIndex(null);
-    } else {
-      // Swap the two cells
-      const newCells = [...scrambledCells];
-      const temp = newCells[selectedIndex].color;
-      newCells[selectedIndex].color = newCells[index].color;
-      newCells[index].color = temp;
-      
-      setScrambledCells(newCells);
-      setSelectedIndex(null);
-      
-      // Check if solved
-      if (checkIfSolved(newCells, originalCells)) {
-        setTimeout(() => setGameState('won'), 500);
-      }
-    }
-  };
+    const handleDownload = () => {
+        // Create canvas and render mosaic
+        const canvas = document.createElement('canvas');
+        canvas.width = 600;
+        canvas.height = 600;
+        const ctx = canvas.getContext('2d');
 
-  const handleHint = () => {
-    setShowHint(!showHint);
-  };
+        if (ctx) {
+            // Draw each cell
+            originalCells.forEach(cell => {
+                ctx.fillStyle = cell.color;
+                ctx.beginPath();
+                cell.vertices.forEach((v, i) => {
+                    if (i === 0) ctx.moveTo(v.x * 3, v.y * 3); // Scale up 200->600
+                    else ctx.lineTo(v.x * 3, v.y * 3);
+                });
+                ctx.closePath();
+                ctx.fill();
+            });
 
-  const handleDownload = () => {
-    // Create canvas and render mosaic
-    const canvas = document.createElement('canvas');
-    canvas.width = 600;
-    canvas.height = 600;
-    const ctx = canvas.getContext('2d');
-    
-    if (ctx) {
-      // Draw each cell
-      originalCells.forEach(cell => {
-        ctx.fillStyle = cell.color;
-        ctx.beginPath();
-        cell.vertices.forEach((v, i) => {
-          if (i === 0) ctx.moveTo(v.x * 3, v.y * 3); // Scale up 200->600
-          else ctx.lineTo(v.x * 3, v.y * 3);
-        });
-        ctx.closePath();
-        ctx.fill();
-      });
-      
-      // Download
-      canvas.toBlob(blob => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'mosaic-puzzle.png';
-          a.click();
-          URL.revokeObjectURL(url);
+            // Download
+            canvas.toBlob(blob => {
+                if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'mosaic-puzzle.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }
+            });
         }
-      });
+    };
+
+    if (gameState === 'loading') {
+        return <LoadingScreen />;
     }
-  };
 
-  if (gameState === 'loading') {
-    return <LoadingScreen />;
-  }
+    if (gameState === 'won') {
+        return <WinScreen onDownload={handleDownload} onPlayAgain={() => router.push('/')} />;
+    }
 
-  if (gameState === 'won') {
-    return <WinScreen onDownload={handleDownload} onPlayAgain={() => router.push('/')} />;
-  }
-
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <GameBoard
-        originalCells={originalCells}
-        scrambledCells={scrambledCells}
-        selectedIndex={selectedIndex}
-        showHint={showHint}
-        gameState={gameState}
-        onCellClick={handleCellClick}
-        onHint={handleHint}
-        onIntroComplete={() => setGameState('playing')}
-      />
-    </div>
-  );
+    return (
+        <div className="min-h-screen bg-background flex flex-col">
+            <GameBoard
+                originalCells={originalCells}
+                scrambledCells={scrambledCells}
+                selectedIndex={selectedIndex}
+                showHint={showHint}
+                gameState={gameState}
+                onCellClick={handleCellClick}
+                onHint={handleHint}
+                onIntroComplete={() => setGameState('playing')}
+            />
+        </div>
+    );
 }
