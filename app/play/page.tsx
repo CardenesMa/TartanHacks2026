@@ -15,7 +15,7 @@ const LOADING_TIME = 2000; // Minimum loading screen time in ms
 type GameState = 'loading' | 'intro' | 'playing' | 'won';
 type Difficulty = 'easy' | 'medium' | 'hard';
 
-export default function PlayPage() {
+export default async function PlayPage() {
     const router = useRouter();
     const { imageData } = useImageStore();
     const [gameState, setGameState] = useState<GameState>('loading');
