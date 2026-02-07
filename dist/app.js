@@ -1,6 +1,11 @@
 // app.js — All game logic, page routing, state management (vanilla JS)
 const LOADING_TIME = 2000; // Simulated loading time for processing image and generating mosaic
+
 (function () {
+    document.getElementById('win-btn').addEventListener('click', function () {
+        showWin();
+    });
+
     // ---- Utility: Image processing ----
     function cropAndResize(dataUrl, tw, th, cb) {
         var img = new Image();
