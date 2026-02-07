@@ -96,17 +96,19 @@ const LOADING_TIME = 2000; // Simulated loading time for processing image and ge
             if (state.gamePhase === 'playing') g.classList.add('interactive');
             if (state.selectedIndex === i) g.classList.add('selected');
 
+            // Base polygon with color
             var p = document.createElementNS(SVG_NS, 'polygon');
             p.setAttribute('points', pointsStr(cell.vertices));
             p.setAttribute('fill', cell.color);
 
             if (state.selectedIndex === i) {
-                p.setAttribute('stroke', 'var(--secondary)');
-                p.setAttribute('stroke-width', '2');
+                p.setAttribute('stroke', 'var(--primary)');
+                p.setAttribute('stroke-width', '3');
             } else if (state.showHint && diff[i]) {
+                // Wrong tile - yellow border
                 p.setAttribute('stroke', '#FFD700');
-                p.setAttribute('stroke-width', '1.5');
-                p.style.filter = 'drop-shadow(0 0 4px #FFD700)';
+                p.setAttribute('stroke-width', '2.5');
+                p.style.filter = 'drop-shadow(0 0 6px rgba(255, 215, 0, 0.2))';
             } else {
                 p.setAttribute('stroke', 'none');
             }
@@ -115,7 +117,19 @@ const LOADING_TIME = 2000; // Simulated loading time for processing image and ge
                 if (state.gamePhase === 'playing') handleCellClick(i);
             });
 
+            // Append base polygon first
             g.appendChild(p);
+            
+            // Then add yellow overlay on top if needed
+            if (state.showHint && diff[i]) {
+                var overlay = document.createElementNS(SVG_NS, 'polygon');
+                overlay.setAttribute('points', pointsStr(cell.vertices));
+                overlay.setAttribute('fill', 'rgba(255, 215, 0, 0.6)');
+                overlay.setAttribute('stroke', 'none');
+                overlay.setAttribute('pointer-events', 'none');
+                g.appendChild(overlay);
+            }
+
             svg.appendChild(g);
         });
     }
@@ -123,25 +137,78 @@ const LOADING_TIME = 2000; // Simulated loading time for processing image and ge
     // ---- Game logic ----
     function handleCellClick(index) {
         state.showHint = false;
+        
         if (state.selectedIndex === null) {
+            // First selection - select and render
             state.selectedIndex = index;
+            renderScrambled();
+            
         } else if (state.selectedIndex === index) {
+            // Deselect - clear selection
             state.selectedIndex = null;
+            renderScrambled();
+            
         } else {
-            // swap
+            // Swap animation sequence
             var a = state.selectedIndex, b = index;
-            var tmp = state.scrambledCells[a].color;
-            state.scrambledCells[a].color = state.scrambledCells[b].color;
-            state.scrambledCells[b].color = tmp;
-            state.selectedIndex = null;
-
-            if (checkIfSolved(state.scrambledCells, state.originalCells)) {
+            var svg = document.getElementById('scrambled-svg');
+            var polyA = svg.querySelectorAll('.cell-g')[a].querySelector('polygon');
+            var polyB = svg.querySelectorAll('.cell-g')[b].querySelector('polygon');
+            
+            // Step 1: Both fade out quickly
+            polyA.style.transition = 'opacity 0.15s ease-out';
+            polyB.style.transition = 'opacity 0.15s ease-out';
+            polyA.style.opacity = '0.3';
+            polyB.style.opacity = '0.3';
+            
+            setTimeout(function() {
+                // Step 2: Swap colors
+                var tmp = state.scrambledCells[a].color;
+                state.scrambledCells[a].color = state.scrambledCells[b].color;
+                state.scrambledCells[b].color = tmp;
+                
+                // Clear selection BEFORE re-render
+                state.selectedIndex = null;
+                
+                // Re-render with new colors
                 renderScrambled();
-                setTimeout(showWin, 500);
-                return;
-            }
+                
+                // Get the new polygons after re-render
+                var svg = document.getElementById('scrambled-svg');
+                var newPolyA = svg.querySelectorAll('.cell-g')[a].querySelector('polygon');
+                var newPolyB = svg.querySelectorAll('.cell-g')[b].querySelector('polygon');
+                
+                // Start faded out
+                newPolyA.style.transition = 'none';
+                newPolyB.style.transition = 'none';
+                newPolyA.style.opacity = '0.3';
+                newPolyB.style.opacity = '0.3';
+                
+                // Step 3: Fade back in with slight overshoot
+                requestAnimationFrame(function() {
+                    newPolyA.style.transition = 'opacity 0.3s ease-out, filter 0.3s ease-out';
+                    newPolyB.style.transition = 'opacity 0.3s ease-out, filter 0.3s ease-out';
+                    newPolyA.style.opacity = '1';
+                    newPolyB.style.opacity = '1';
+                    newPolyA.style.filter = 'brightness(1.3)';
+                    newPolyB.style.filter = 'brightness(1.3)';
+                    
+                    // Remove brightness after a moment
+                    setTimeout(function() {
+                        newPolyA.style.filter = 'none';
+                        newPolyB.style.filter = 'none';
+                    }, 300);
+                });
+                
+                // Check win after animation completes
+                setTimeout(function() {
+                    if (checkIfSolved(state.scrambledCells, state.originalCells)) {
+                        showWin();
+                    }
+                }, 400);
+                
+            }, 150);
         }
-        renderScrambled();
     }
 
     function toggleHint() {

@@ -15,6 +15,39 @@ button:active{transform:scale(.95)}
 .hidden{display:none!important}
 .page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
 
+/* Selected cell pulsing animation - stays within bounds */
+.cell-g.selected polygon {
+    animation: gentlePulse 0.8s ease-in-out infinite;
+    stroke: var(--primary) !important;
+    stroke-width: 3;
+}
+
+@keyframes gentlePulse {
+    0%, 100% {
+        opacity: 0.85;
+        stroke-width: 3;
+    }
+    50% {
+        opacity: 1;
+        stroke-width: 4;
+    }
+}
+
+/* Interactive cells have subtle hover effect */
+.cell-g.interactive polygon {
+    cursor: pointer;
+    transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+.cell-g.interactive:hover polygon {
+    opacity: 0.9;
+    filter: brightness(1.1);
+}
+
+.cell-g.interactive:active polygon {
+    opacity: 0.7;
+}
+
 /* Home */
 #home .title{font-size:10vw;font-weight:700;color:var(--primary);font-style:italic;margin-bottom:.5rem}
 #home .subtitle{font-size:1rem;color:var(--primary);margin-bottom:2rem}
