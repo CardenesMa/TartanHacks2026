@@ -7,7 +7,12 @@ var Audio = (function () {
     // Initialize audio context on first user interaction
     function getContext() {
         if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.warn('Web Audio API not supported:', e);
+                return null;
+            }
         }
         return audioContext;
     }
@@ -25,7 +30,12 @@ var Audio = (function () {
      */
     function applyADSR(attack, decay, sustain, release, peakVolume, gainNode, startTime) {
         var ctx = getContext();
+        if (!ctx) return 0;
         var now = startTime || ctx.currentTime;
+
+        // Ensure sustain is at least 0.001 for exponentialRamp
+        sustain = Math.max(0.001, sustain);
+        peakVolume = Math.max(0.001, peakVolume);
 
         // Start from silence
         gainNode.gain.setValueAtTime(0.001, now);
@@ -47,39 +57,49 @@ var Audio = (function () {
 
     // Helper to create and play a tone
     function playTone(frequency, duration, type, volumeStart, volumeEnd) {
-        var ctx = getContext();
-        var oscillator = ctx.createOscillator();
-        var gainNode = ctx.createGain();
+        try {
+            var ctx = getContext();
+            if (!ctx) return;
+            var oscillator = ctx.createOscillator();
+            var gainNode = ctx.createGain();
 
-        oscillator.type = type || 'sine';
-        oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
+            oscillator.type = type || 'sine';
+            oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
 
-        gainNode.gain.setValueAtTime(volumeStart || 0.3, ctx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(volumeEnd || 0.01, ctx.currentTime + duration);
+            gainNode.gain.setValueAtTime(volumeStart || 0.3, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(Math.max(0.001, volumeEnd || 0.01), ctx.currentTime + duration);
 
-        oscillator.connect(gainNode);
-        gainNode.connect(ctx.destination);
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
 
-        oscillator.start(ctx.currentTime);
-        oscillator.stop(ctx.currentTime + duration);
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + duration);
+        } catch (e) {
+            console.warn('Audio playTone error:', e);
+        }
     }
 
     // Helper to play tone with ADSR envelope
     function playToneADSR(frequency, attack, decay, sustain, release, peakVolume, type) {
-        var ctx = getContext();
-        var oscillator = ctx.createOscillator();
-        var gainNode = ctx.createGain();
+        try {
+            var ctx = getContext();
+            if (!ctx) return;
+            var oscillator = ctx.createOscillator();
+            var gainNode = ctx.createGain();
 
-        oscillator.type = type || 'sine';
-        oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
+            oscillator.type = type || 'sine';
+            oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
 
-        var totalDuration = applyADSR(attack, decay, sustain, release, peakVolume, gainNode, ctx.currentTime);
+            var totalDuration = applyADSR(attack, decay, sustain, release, peakVolume, gainNode, ctx.currentTime);
 
-        oscillator.connect(gainNode);
-        gainNode.connect(ctx.destination);
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
 
-        oscillator.start(ctx.currentTime);
-        oscillator.stop(totalDuration);
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(totalDuration);
+        } catch (e) {
+            console.warn('Audio playToneADSR error:', e);
+        }
     }
 
     // ===== CUSTOMIZABLE SOUNDS =====
@@ -90,18 +110,23 @@ var Audio = (function () {
      * Edit: frequency (pitch), duration (length), type (waveform)
      */
     function tileClick() {
-        playToneADSR(
-            2400,        // Frequency in Hz (higher = higher pitch)
-            0.001, // attack
-            0.08, // D 
-            0.05, // S 
-            0.13, // R 
-            1,
-            // 0.08,       // Duration in seconds
-            // 'triangle',     // Waveform: 'sine', 'square', 'sawtooth', 'triangle'
-            // 0.,       // Start volume (0-1)
-            // 0.01        // End volume (0-1)
-        );
+        try {
+            playToneADSR(
+                2400,        // Frequency in Hz (higher = higher pitch)
+                0.001, // attack
+                0.08, // D 
+                0.05, // S 
+                0.13, // R 
+                1,
+                'sine'
+                // 0.08,       // Duration in seconds
+                // 'triangle',     // Waveform: 'sine', 'square', 'sawtooth', 'triangle'
+                // 0.,       // Start volume (0-1)
+                // 0.01        // End volume (0-1)
+            );
+        } catch (e) {
+            console.warn('Audio error:', e);
+        }
     }
 
     /**
@@ -115,15 +140,23 @@ var Audio = (function () {
      * playToneWithLowpass(500, 0.3, 800, 2, 'sawtooth', 0.2);
      */
     function swap() {
-        var ctx = getContext();
+        try {
+            var ctx = getContext();
 
-        // First tone - rising
-        playTone(400, 0.12, 'sine', 0.2, 0.01);
+            // First tone - rising
+            playTone(400, 0.12, 'sine', 0.2, 0.01);
 
-        // Second tone - falling (slight delay)
-        setTimeout(function () {
-            playTone(600, 0.15, 'sine', 0.25, 0.01);
-        }, 60);
+            // Second tone - falling (slight delay)
+            setTimeout(function () {
+                try {
+                    playTone(600, 0.15, 'sine', 0.25, 0.01);
+                } catch (e) {
+                    console.warn('Audio error:', e);
+                }
+            }, 60);
+        } catch (e) {
+            console.warn('Audio error:', e);
+        }
     }
 
     /**
@@ -134,15 +167,20 @@ var Audio = (function () {
      * playTwoTones(1200, 0.05, 200, 0.1, 'sine', 0.15);
      */
     function buttonClick() {
-        var ctx = getContext();
-        playToneADSR
-            (500,
+        try {
+            var ctx = getContext();
+            playToneADSR(
+                500,
                 0.01,
                 0.05,
                 0.1,
                 0.3,
                 1,
-                'sine');
+                'sine'
+            );
+        } catch (e) {
+            console.warn('Audio error:', e);
+        }
     }
 
 

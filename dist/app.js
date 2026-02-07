@@ -1,10 +1,6 @@
 // app.js — All game logic, page routing, state management (vanilla JS)
 const LOADING_TIME = 2000; // Simulated loading time for processing image and generating mosaic
-
 (function () {
-    document.getElementById('win-btn').addEventListener('click', function () {
-        showWin();
-    });
 
     // ---- Utility: Image processing ----
     function cropAndResize(dataUrl, tw, th, cb) {
@@ -119,7 +115,10 @@ const LOADING_TIME = 2000; // Simulated loading time for processing image and ge
             }
 
             p.addEventListener('click', function () {
-                if (state.gamePhase === 'playing') handleCellClick(i);
+                if (state.gamePhase === 'playing') {
+                    Audio.tileClick();
+                    handleCellClick(i);
+                }
             });
 
             // Append base polygon first
@@ -168,6 +167,7 @@ const LOADING_TIME = 2000; // Simulated loading time for processing image and ge
 
             setTimeout(function () {
                 // Step 2: Swap colors
+                Audio.swap();
                 var tmp = state.scrambledCells[a].color;
                 state.scrambledCells[a].color = state.scrambledCells[b].color;
                 state.scrambledCells[b].color = tmp;
@@ -392,6 +392,16 @@ const LOADING_TIME = 2000; // Simulated loading time for processing image and ge
         hintBtn.addEventListener('click', toggleHint);
         downloadBtn.addEventListener('click', handleDownload);
         playAgainBtn.addEventListener('click', function () { showPage('home'); });
+
+        // to all buttons add button sound 
+        var buttons = document.querySelectorAll('button');
+        buttons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                // Play sound on button click
+                Audio.buttonClick();
+            });
+        });
+        // to all svg polygons, add tile sound 
 
         showPage('home');
     }
