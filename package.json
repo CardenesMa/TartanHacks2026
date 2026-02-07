@@ -1,6 +1,5 @@
 {
-    "scripts": 
-    {
+    "scripts": {
         "build": "node build.cjs"
     }
 }

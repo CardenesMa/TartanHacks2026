@@ -49,8 +49,9 @@ var MosaicGen = (function () {
         seeds.push({ x: 0, y: 0 }, { x: w - 1, y: 0 }, { x: 0, y: h - 1 }, { x: w - 1, y: h - 1 });
 
         // edge seeds
-        for (var i = 1; i < 8; i++) {
-            var t = i / 8;
+        var NUM_SEEDS = 2;
+        for (var i = 1; i < NUM_SEEDS; i++) {
+            var t = i / NUM_SEEDS;
             seeds.push({ x: t * (w - 1), y: 0 }, { x: t * (w - 1), y: h - 1 });
             seeds.push({ x: 0, y: t * (h - 1) }, { x: w - 1, y: t * (h - 1) });
         }
