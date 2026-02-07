@@ -1,4 +1,5 @@
 // app.js — All game logic, page routing, state management (vanilla JS)
+const LOADING_TIME = 2000; // Simulated loading time for processing image and generating mosaic
 (function () {
     // ---- Utility: Image processing ----
     function cropAndResize(dataUrl, tw, th, cb) {
@@ -251,7 +252,7 @@
         state.gamePhase = 'intro';
 
         // show loading screen
-        document.getElementById('loading').hidden = false;
+        document.getElementById('loading').style.display = 'flex';
 
         cropAndResize(state.imageData, 200, 200, function (processed) {
             if (!processed) { showPage('home'); return; }
@@ -261,9 +262,10 @@
             state.scrambledCells = getScrambledVersion(state.originalCells);
 
             setTimeout(function () {
+                document.getElementById('loading').style.display = 'none';
                 showPage('game');
                 runIntro();
-            }, 2000);
+            }, LOADING_TIME);
         });
     }
 
