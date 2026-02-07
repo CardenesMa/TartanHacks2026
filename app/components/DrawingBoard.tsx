@@ -17,13 +17,13 @@ export default function DrawingBoard({ polygons, onPolygonClick }: DrawingBoardP
     } as Cell));
 
     return (
-        <svg width="800" height="600">
+        <svg width="100wv" height="50vh">
             {svgPolys.map(p => (
                 <polygon
                     key={p.id}
                     points={p.cell.vertices.map(pt => `${pt.x},${pt.y}`).join(" ")}
                     fill={p.cell.color}
-                    stroke={p.highlighted ? "yellow" : "black"}
+                    // stroke={p.highlighted ? "yellow" : "black"}
                     onClick={() => onPolygonClick(p.id)}
                 />
             ))}

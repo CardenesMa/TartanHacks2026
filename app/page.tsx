@@ -77,7 +77,10 @@ export default function Home() {
           {/*  blank "image"  */}
           {currentImage ?
             // <canvas ref={canvasRef} className="w-64 h-64 bg-white rounded-2xl border border-bigblue" />
-            <Mosaic imageData={currentImage} />
+
+            <div><Mosaic imageData={currentImage} />
+              <button onClick={handleReset}>Unload</button>
+            </div>
             :
             <label className="w-64 h-64 bg-white rounded-2xl border border-bigblue p-6 flex flex-col items-center cursor-pointer hover:bg-red transition-colors">
               <input

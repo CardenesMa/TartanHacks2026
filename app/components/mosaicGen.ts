@@ -35,7 +35,7 @@ function map(val: number, inMin: number, inMax: number, outMin: number, outMax: 
 export interface Image {
     width: number;
     height: number;
-    pixels: Uint8Array<ArrayBuffer>;
+    pixels: Uint8ClampedArray; // RGBA values in a flat array
 }
 
 interface Seed {
@@ -64,7 +64,7 @@ interface VoronoiData {
 
 export interface _Cell {
     vertices: Seed[];
-    color: any;
+    color: string;
 }
 
 // Hauptfunktionen
@@ -315,8 +315,8 @@ function calculateCellColor(voronoiMap: number[][], seedIdx: number, image: Imag
             }
         }
     }
-    if (count === 0) return { r: 128, g: 128, b: 128 };
-    return { r: sumR / count, g: sumG / count, b: sumB / count };
+    if (count === 0) return "rgb(128, 128, 128)";
+    return `rgb(${sumR / count}, ${sumG / count}, ${sumB / count})`;
 }
 
 function calculateImageFlowData(image: Image): FlowData {
