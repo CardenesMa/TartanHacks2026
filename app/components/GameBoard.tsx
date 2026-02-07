@@ -72,7 +72,7 @@ export default function GameBoard({
   const differingCells = showHint ? getDifferingCells() : [];
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-start p-4 relative overflow-hidden">
+    <div className="flex-1 m-4 flex gap-4 flex-col items-center justify-start p-4 relative overflow-hidden">
       {/* Original Mosaic - Top Half */}
       {showOriginal && (
         <div
@@ -148,25 +148,13 @@ export default function GameBoard({
       {gameState === 'playing' && (
         <button
           onClick={onHint}
-          className="mt-4 px-6 py-3 bg-white border-2 border-bigblue text-bigblue rounded-lg font-semibold hover:bg-lightblue transition-all duration-200 active:scale-95 shadow-md"
+          className="m-4 p-4 bg-white border-2 border-bigblue text-bigblue rounded-lg font-semibold hover:bg-lightblue transition-all duration-200 active:scale-95 shadow-md"
         >
           {showHint ? 'Hide' : 'Show'} Differences
         </button>
       )}
 
       <style jsx>{`
-        .mosaic-container {
-          width: 90vw;
-          max-width: 400px;
-        }
-
-        .mosaic-svg {
-          width: 100%;
-          height: auto;
-          border: 2px solid #2783C5;
-          border-radius: 12px;
-          background: white;
-        }
 
         .pop-in {
           animation: pop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
