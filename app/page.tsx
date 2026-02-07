@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getP2PManager } from '@/lib/p2p';
+import { Toast } from '@/components/Toast';
 
 export default function Home() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function Home() {
   const [roomCode, setRoomCode] = useState('');
   const [myCode, setMyCode] = useState('');
   const [playerName, setPlayerName] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const p2p = getP2PManager();
@@ -19,7 +21,7 @@ export default function Home() {
 
   const handleHost = () => {
     if (!playerName.trim()) {
-      alert('Please enter your name');
+      setError('Please enter your name');
       return;
     }
     const p2p = getP2PManager();
@@ -40,11 +42,11 @@ export default function Home() {
 
   const handleJoin = async () => {
     if (!playerName.trim()) {
-      alert('Please enter your name');
+      setError('Please enter your name');
       return;
     }
     if (!roomCode.trim()) {
-      alert('Please enter a room code');
+      setError('Please enter a room code');
       return;
     }
 
@@ -64,15 +66,16 @@ export default function Home() {
       });
 
       router.push('/upload');
-    } catch (error) {
-      console.error('Failed to join:', error);
-      alert('Failed to join room. Please check the code and try again.');
+    } catch (err) {
+      console.error('Failed to join:', err);
+      setError('Failed to join room. Please check the code and try again.');
     }
   };
 
   if (mode === 'select') {
     return (
       <main className="min-h-screen flex items-center justify-center p-8">
+        {error && <Toast message={error} type="error" onClose={() => setError(null)} />}
         <div className="max-w-md w-full space-y-8 text-center">
           <h1 className="text-4xl font-bold mb-8">Drawing Game</h1>
           
@@ -99,6 +102,7 @@ export default function Home() {
   if (mode === 'host') {
     return (
       <main className="min-h-screen flex items-center justify-center p-8">
+        {error && <Toast message={error} type="error" onClose={() => setError(null)} />}
         <div className="max-w-md w-full space-y-8">
           <button
             onClick={() => setMode('select')}
@@ -144,6 +148,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex items-center justify-center p-8">
+      {error && <Toast message={error} type="error" onClose={() => setError(null)} />}
       <div className="max-w-md w-full space-y-8">
         <button
           onClick={() => setMode('select')}

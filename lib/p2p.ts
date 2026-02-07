@@ -24,7 +24,7 @@ export class P2PManager {
   
   constructor() {
     // Generate ID immediately
-    this.peerId = 'peer-' + Math.random().toString(36).substr(2, 9);
+    this.peerId = 'peer-' + Math.random().toString(36).substring(2, 11);
     
     if (typeof window !== 'undefined') {
       this.initPeer();

@@ -220,6 +220,7 @@ export default function PlayPage() {
                 onMouseLeave={stopDrawing}
                 className="border-2 border-gray-300 rounded-lg cursor-crosshair bg-white w-full"
                 style={{ maxWidth: '100%', height: 'auto' }}
+                aria-label="Drawing canvas - click and drag to draw"
               />
             </div>
           </div>
