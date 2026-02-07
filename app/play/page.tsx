@@ -1,13 +1,23 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useImageStore } from '@/store/useImageStore';
+import { createSelectionController } from '../state/poyrender';
+import { Polygon } from '../state/poyrender';
+import DrawingBoard from '../components/svgguy';
+
 
 export default function PlayPage() {
     const svgRef = useRef<SVGSVGElement>(null);
     const { imageData } = useImageStore();
     const router = useRouter();
+    const [polygons, setPolygons] = useState<Polygon[]>([]);
+
+    const controllerRef = useRef(
+        createSelectionController(polygons, setPolygons)
+    )
+
 
     useEffect(() => {
         // Redirect if no image data
@@ -30,10 +40,15 @@ export default function PlayPage() {
                 </div>
 
                 <div className="w-full bg-white rounded-2xl shadow-lg border border-slate-100 p-6 flex flex-col items-center">
-                    <svg
-                        ref={svgRef}
-                        className="w-full max-w-lg aspect-video rounded-xl border border-slate-200 shadow"
-                    />
+                    <svg width="800" height="600">
+
+
+                        <DrawingBoard
+                            polygons={polygons}
+                            onPolygonClick={id => controllerRef.current(id)}
+                        />
+                    </svg>
+
                 </div>
 
                 <div className="flex justify-center gap-4 w-full">
