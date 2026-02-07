@@ -1,7 +1,7 @@
 // mosaicGen.ts
-// Übersetzung von mosaicGen.js nach TypeScript
+// Translation from mosaicGen.js to TypeScript
 
-// Hilfsfunktionen für mathematische Operationen und Typen
+// Helper functions for mathematical operations and types
 function random(max: number): number {
     return Math.random() * max;
 }
@@ -31,7 +31,7 @@ function map(val: number, inMin: number, inMax: number, outMin: number, outMax: 
     return outMin + ((val - inMin) * (outMax - outMin)) / (inMax - inMin);
 }
 
-// Typen für Bild und Zellen
+// Types for image and cells
 export interface Image {
     width: number;
     height: number;
@@ -67,7 +67,7 @@ export interface _Cell {
     color: string;
 }
 
-// Hauptfunktionen
+// Main functions
 export function generateVoronoiMosaic(image: Image, numSeeds: number): _Cell[] {
     const flowData = calculateImageFlowData(image);
     const seeds = generateFlowBasedSeeds(image, flowData, numSeeds);
@@ -80,11 +80,13 @@ function generateFlowBasedSeeds(image: Image, flowData: FlowData, numSeeds: numb
     const seeds: Seed[] = [];
     const minDistance = max(image.width, image.height) / 15;
 
+    // Add corner seeds
     seeds.push({ x: 0, y: 0 });
     seeds.push({ x: image.width - 1, y: 0 });
     seeds.push({ x: 0, y: image.height - 1 });
     seeds.push({ x: image.width - 1, y: image.height - 1 });
 
+    // Add edge seeds to prevent skinny edge polygons
     const edgePoints = 8;
     for (let i = 1; i < edgePoints; i++) {
         const t = i / edgePoints;
@@ -105,6 +107,7 @@ function generateFlowBasedSeeds(image: Image, flowData: FlowData, numSeeds: numb
     const numUniformSeeds = numSeeds - numEdgeSeeds;
     const maxAttempts = 30;
 
+    // Edge-weighted seeds with Poisson disk sampling constraint
     for (let i = 0; i < numEdgeSeeds; i++) {
         let placed = false;
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -150,6 +153,7 @@ function generateFlowBasedSeeds(image: Image, flowData: FlowData, numSeeds: numb
         }
     }
 
+    // Uniform seeds with minimum distance constraint
     for (let i = 0; i < numUniformSeeds; i++) {
         let placed = false;
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -302,7 +306,7 @@ function convexHull(points: Seed[]): Seed[] {
     return hull;
 }
 
-function calculateCellColor(voronoiMap: number[][], seedIdx: number, image: Image): any {
+function calculateCellColor(voronoiMap: number[][], seedIdx: number, image: Image): string {
     let sumR = 0, sumG = 0, sumB = 0, count = 0;
     for (let y = 0; y < image.height; y++) {
         for (let x = 0; x < image.width; x++) {
@@ -316,7 +320,13 @@ function calculateCellColor(voronoiMap: number[][], seedIdx: number, image: Imag
         }
     }
     if (count === 0) return "rgb(128, 128, 128)";
-    return `rgb(${sumR / count}, ${sumG / count}, ${sumB / count})`;
+    
+    // CRITICAL FIX: Round to integers for proper Canvas rendering
+    const r = Math.round(sumR / count);
+    const g = Math.round(sumG / count);
+    const b = Math.round(sumB / count);
+    
+    return `rgb(${r}, ${g}, ${b})`;
 }
 
 function calculateImageFlowData(image: Image): FlowData {
@@ -359,4 +369,4 @@ function calculateImageFlowData(image: Image): FlowData {
     return data;
 }
 
-// cropAndResize und calculateCellEdgeProperties können analog übersetzt werden, falls benötigt.
+// cropAndResize and calculateCellEdgeProperties can be translated similarly if needed.

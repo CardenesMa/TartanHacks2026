@@ -6,25 +6,31 @@ type DrawingBoardProps = {
     onPolygonClick: (id: string) => void;
 }
 
-
-
 export default function DrawingBoard({ polygons, onPolygonClick }: DrawingBoardProps) {
-    // turn all pilygons into svg polygons
+    // Turn all polygons into svg polygons
     const svgPolys = polygons.map((cell, index) => ({
         id: `poly-${index}`,
         cell: cell,
         highlighted: false
     } as Cell));
 
+    // CRITICAL FIX: Add viewBox to properly scale the 200x200 coordinate space
     return (
-        <svg width="100wv" height="50vh">
+        <svg 
+            width="100%" 
+            height="100%" 
+            viewBox="0 0 200 200"
+            preserveAspectRatio="xMidYMid meet"
+            style={{ maxWidth: '600px', maxHeight: '600px', border: '1px solid #ccc' }}
+        >
             {svgPolys.map(p => (
                 <polygon
                     key={p.id}
                     points={p.cell.vertices.map(pt => `${pt.x},${pt.y}`).join(" ")}
                     fill={p.cell.color}
-                    // stroke={p.highlighted ? "yellow" : "black"}
+                    stroke="none"
                     onClick={() => onPolygonClick(p.id)}
+                    style={{ cursor: 'pointer' }}
                 />
             ))}
         </svg>
