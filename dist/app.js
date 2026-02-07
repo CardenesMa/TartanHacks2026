@@ -382,6 +382,8 @@ const LOADING_TIME = 2000; // Simulated loading time for processing image and ge
             reader.onload = function () { setImage(reader.result); };
             reader.readAsDataURL(file);
         });
+        // also add it to debug buttons
+
 
         changeBtn.addEventListener('click', clearImage);
         btnEasy.addEventListener('click', function () { startGame('easy'); });
