@@ -22,10 +22,10 @@ export default function Home() {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = (difficulty: 'easy' | 'medium' | 'hard') => {
     if (currentImage) {
       setImageData(currentImage);
-      router.push('/play');
+      router.push(`/play?difficulty=${difficulty}`);
     }
   };
 
@@ -52,7 +52,7 @@ export default function Home() {
               <div className="w-64 h-64 rounded-2xl overflow-hidden border border-bigblue">
                 <img src={currentImage} alt="Preview" className="w-full h-full object-cover" />
               </div>
-              <button 
+              <button
                 onClick={handleReset}
                 className="px-6 py-2 text-bigblue hover:bg-lightblue rounded-lg transition-all duration-200 active:scale-95"
               >
@@ -69,12 +69,12 @@ export default function Home() {
                 onChange={handleFileChange}
               />
               <svg viewBox="0 0 24 24" className="w-24 h-24">
-                <path 
-                  d="M15.24,6.63a1.09,1.09,0,0,0-2,0l-2.8,5.53v0L9,8.9a1,1,0,0,0-1.8,0L3,18H21Z" 
-                  fill="none" 
-                  stroke="#2783C5" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
+                <path
+                  d="M15.24,6.63a1.09,1.09,0,0,0-2,0l-2.8,5.53v0L9,8.9a1,1,0,0,0-1.8,0L3,18H21Z"
+                  fill="none"
+                  stroke="#2783C5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   strokeWidth="2"
                 />
               </svg>
@@ -82,13 +82,29 @@ export default function Home() {
             </label>
           )}
 
-          <button 
-            className="w-64 h-16 bg-bigblue text-white text-xl rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95" 
-            onClick={handleConfirm} 
-            disabled={!currentImage}
-          >
-            Play
-          </button>
+          <div>
+            <button
+              className="w-64 h-16 bg-bigblue text-white text-xl rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+              onClick={() => handleConfirm('easy')}
+              disabled={!currentImage}
+            >
+              Easy
+            </button>
+            <button
+              className="w-64 h-16 bg-bigblue text-white text-xl rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 mt-4"
+              onClick={() => handleConfirm('medium')}
+              disabled={!currentImage}
+            >
+              Medium
+            </button>
+            <button
+              className="w-64 h-16 bg-bigblue text-white text-xl rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 mt-4"
+              onClick={() => handleConfirm('hard')}
+              disabled={!currentImage}
+            >
+              Cookoobananapants
+            </button>
+          </div>
         </div>
       </div>
     </main>

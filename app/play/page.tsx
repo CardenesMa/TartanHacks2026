@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useImageStore } from '@/store/useImageStore';
+import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import GameBoard from '../components/GameBoard';
 import LoadingScreen from '../components/LoadingScreen';
@@ -10,6 +11,7 @@ import { generateVoronoiMosaic, Image as Img, _Cell } from '../components/mosaic
 import { cropAndResize, getScrambledVersion, checkIfSolved } from '../state/gameUtils';
 
 type GameState = 'loading' | 'intro' | 'playing' | 'won';
+type Difficulty = 'easy' | 'medium' | 'hard';
 
 export default function PlayPage() {
     const router = useRouter();
@@ -19,6 +21,11 @@ export default function PlayPage() {
     const [scrambledCells, setScrambledCells] = useState<_Cell[]>([]);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const [showHint, setShowHint] = useState(false);
+
+    // get the difficulty from the query params
+    const searchParams = useSearchParams()
+
+    const difficulty = searchParams.get('difficulty') as Difficulty || 'medium';
 
     useEffect(() => {
         if (!imageData) {
@@ -32,8 +39,14 @@ export default function PlayPage() {
                 // Crop and resize to 200x200
                 const processedImage = await cropAndResize(imageData, 200, 200);
 
-                // Generate original mosaic
-                const cells = generateVoronoiMosaic(processedImage, 150);
+                // Generate original mosaic based on difficulty
+                let size = 150;
+                if (difficulty === 'easy') {
+                    size = 2;
+                } else if (difficulty === 'hard') {
+                    size = 200;
+                }
+                const cells = generateVoronoiMosaic(processedImage, size);
                 setOriginalCells(cells);
 
                 // Generate scrambled version (efficient - each tile swapped at least once)
