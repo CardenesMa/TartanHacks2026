@@ -40,7 +40,7 @@ button:active{transform:scale(.95)}
 
 /* Game */
 #game{justify-content:flex-start;gap:1rem;padding:1rem;overflow:hidden;position:relative}
-.mosaic-wrap{width:40vw;max-width:400px}
+.mosaic-wrap{width:95vw}
 .mosaic-svg{display:block;width:100%;height:auto}
 .mosaic-label{text-align:center;margin-top:.5rem;color:var(--primary);font-weight:600}
 .hint-btn{margin:1rem;padding:1rem;background:#fff;border:2px solid var(--primary);color:var(--primary);border-radius:.5rem;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.1)}
@@ -54,8 +54,8 @@ button:active{transform:scale(.95)}
 /* Intro animations */
 .pop-in{animation:pop .5s cubic-bezier(.68,-.55,.265,1.55)}
 @keyframes pop{0%{transform:scale(0) translateY(50%);opacity:0}70%{transform:scale(1.1) translateY(50%)}100%{transform:scale(1) translateY(50%);opacity:1}}
-.glide-up{animation:glideUp .8s cubic-bezier(.4,0,.2,1) forwards}
-@keyframes glideUp{from{bottom:50%;transform:translateY(50%)}to{bottom:auto;position:relative;transform:translateY(0)}}
+.glide-up{animation:glideUp .8s ease-in forwards}
+@keyframes glideUp{from{bottom:50%;transform:translateY(50%); width:95vw; }to{bottom:auto;position:relative;transform:translateY(0); width:40vw;}}
 .fade-in{animation:fadeIn .5s ease-in}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
@@ -82,20 +82,12 @@ button:active{transform:scale(.95)}
     <h1 class="title">Welcome</h1>
     <p class="subtitle">Create your mosaic</p>
   </div>
-  <div id="loading" hidden>
-    <!-- make loading svg dots -->
-     <div class="min-h-screen bg-background flex flex-col items-center justify-center">
-      <div class="text-center">
-        <!-- <h2 class="text-3xl font-bold text-primary mb-8">Creating your puzzle...</h2> -->
-
-        <div class="flex gap-3 justify-center">
-          <div class="w-4 h-4 bg-primary rounded-full animate-bounce" style=" animation-delay: '0ms' "></div>
-          <div class="w-4 h-4 bg-primary rounded-full animate-bounce" style=" animation-delay: '150ms' "></div>
-          <div class="w-4 h-4 bg-primary rounded-full animate-bounce" style=" animation-delay: '300ms' "></div>
-        </div>
-      </div>
-    </div>
+  <!-- LOADING PAGE -->
+<div id="loading" class="hidden">
+  <div style="text-align:center">
+    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
   </div>
+</div>
   <div id="upload-area">
     <label class="upload-label">
       <input type="file" accept="image/*" id="file-input" style="display:none">
@@ -118,9 +110,11 @@ button:active{transform:scale(.95)}
   </div>
 </div>
 
+
+
 <!-- GAME PAGE -->
 <div id="game" class="page hidden">
-  <div class="mosaic-wrap glide-up" id="original-wrap">
+  <div class="mosaic-wrap glide-up shrink" id="original-wrap">
     <svg class="mosaic-svg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" id="original-svg"></svg>
     <div class="mosaic-label">Original</div>
   </div>
